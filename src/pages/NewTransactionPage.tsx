@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAccountId } from '../storage/accountStorage';
 import { createTransaction } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
+import { apiBaseURL } from '../api/client';
 
 function todayISO() {
   const d = new Date();
@@ -43,7 +44,7 @@ export function NewTransactionPage() {
       });
       navigate('/');
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, 'Erro ao criar transação.'));
+      setError(getApiErrorMessage(err, 'Erro ao criar transação.', apiBaseURL));
     } finally {
       setLoading(false);
     }

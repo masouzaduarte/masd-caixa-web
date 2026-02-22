@@ -3,8 +3,9 @@ import { AxiosError } from 'axios';
 /**
  * Extrai mensagem de erro da resposta da API ou retorna mensagem padrão.
  * Se não houver response (ex.: CORS, rede), sugere verificar API e CORS.
+ * @param apiUrl - URL da API usada (opcional), para incluir na mensagem quando não há resposta
  */
-export function getApiErrorMessage(err: unknown, defaultMessage: string): string {
+export function getApiErrorMessage(err: unknown, defaultMessage: string, apiUrl?: string): string {
   if (!err || typeof err !== 'object' || !('isAxiosError' in err)) {
     return defaultMessage;
   }
@@ -13,7 +14,10 @@ export function getApiErrorMessage(err: unknown, defaultMessage: string): string
   if (!data) {
     const status = axiosErr.response?.status;
     if (status != null) return `${defaultMessage} (HTTP ${status})`;
-    return `${defaultMessage} Verifique se a API está em http://localhost:8080 e se CORS está habilitado.`;
+    const hint = apiUrl
+      ? ` Verifique se a API está rodando em ${apiUrl} e se CORS está habilitado.`
+      : ' Verifique se a API está acessível e se CORS está habilitado.';
+    return `${defaultMessage}${hint}`;
   }
   if (typeof data.message === 'string' && data.message) return data.message;
   if (typeof data.detail === 'string' && data.detail) return data.detail;

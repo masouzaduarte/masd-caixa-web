@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createCompany, createAccount } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
+import { apiBaseURL } from '../api/client';
 import { setAccountId } from '../storage/accountStorage';
 
 export function SetupPage() {
@@ -24,7 +25,7 @@ export function SetupPage() {
       setCompanyId(res.data.id);
       setStep('account');
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, 'Erro ao criar empresa.'));
+      setError(getApiErrorMessage(err, 'Erro ao criar empresa.', apiBaseURL));
     } finally {
       setLoading(false);
     }
@@ -48,7 +49,7 @@ export function SetupPage() {
       setAccountId(res.data.id);
       navigate('/');
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, 'Erro ao criar conta.'));
+      setError(getApiErrorMessage(err, 'Erro ao criar conta.', apiBaseURL));
     } finally {
       setLoading(false);
     }
