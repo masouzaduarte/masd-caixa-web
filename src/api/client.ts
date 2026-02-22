@@ -1,41 +1,52 @@
 import axios from "axios";
 
-const runtimeBaseURL = typeof window !== "undefined" ? window.MASD_CAIXA?.API_BASE_URL : undefined;
-const buildBaseURL = import.meta.env.VITE_API_BASE_URL;
+/**
+ * URL base da API — uma única fonte por ambiente:
+ *
+ * LOCAL (npm run dev):
+ *   - .env: VITE_API_BASE_URL=http://localhost:8080
+ *   - O client adiciona /api automaticamente (context-path do backend).
+ *
+ * PRODUÇÃO (Docker/Railway):
+ *   - Opção A (recomendada): variável de BUILD VITE_API_BASE_URL no Railway
+ *     (ex.: https://sua-api.up.railway.app/api) → valor fixo no bundle.
+ *   - Opção B: variável de RUNTIME API_BASE_URL no Railway → entrypoint gera
+ *     /env.js e o app usa window.MASD_CAIXA.API_BASE_URL.
+ */
 
-let baseURL = runtimeBaseURL || buildBaseURL;
+const isLocalhost = (url: string) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(url);
 
-// Em produção, nunca usar localhost; se env.js veio com localhost, usa VITE_API_BASE_URL (build) como fallback
-const isLocalhost = (url: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(url);
-if (import.meta.env.PROD && baseURL && isLocalhost(baseURL)) {
-  baseURL = buildBaseURL && !isLocalhost(buildBaseURL) ? buildBaseURL : "";
-}
-// Garante que a URL da API em produção termine em /api (context-path do backend)
-if (import.meta.env.PROD && baseURL && !baseURL.endsWith("/api")) {
-  baseURL = baseURL.replace(/\/?$/, "") + "/api";
-}
+function getBaseURL(): string {
+  const runtime = typeof window !== "undefined" ? window.MASD_CAIXA?.API_BASE_URL : undefined;
+  const build = import.meta.env.VITE_API_BASE_URL;
+  let url = runtime || build || "";
 
-// Em dev, se a API for localhost:8080, usa a URL direta do backend com context-path /api (CORS já permite localhost:*)
-const devDirectOrigins = ["http://localhost:8080", "http://127.0.0.1:8080"];
-if (import.meta.env.DEV && baseURL && devDirectOrigins.includes(baseURL)) {
-  baseURL = baseURL.replace(/\/?$/, "") + "/api";
-}
+  // Produção: nunca usar localhost; se veio do env.js com default, tentar build
+  if (import.meta.env.PROD && url && isLocalhost(url)) {
+    url = build && !isLocalhost(build) ? build : "";
+  }
 
-if (!baseURL && !import.meta.env.DEV) {
-  throw new Error(
-    "API base URL não configurada. Em produção (Railway): defina a variável API_BASE_URL no serviço do FRONTEND (masd-caixa-web), ex.: https://sua-api.up.railway.app/api"
-  );
-}
-if (import.meta.env.DEV && !baseURL && !runtimeBaseURL && !buildBaseURL) {
-  throw new Error("API base URL não configurada (runtime ou VITE_API_BASE_URL).");
+  // Sempre terminar em /api (context-path do backend)
+  if (url && !url.endsWith("/api")) {
+    url = url.replace(/\/?$/, "") + "/api";
+  }
+
+  return url;
 }
 
-/** URL da API para exibir em mensagens de erro (em dev com proxy mostra o backend real). */
-export const apiBaseURL = baseURL || runtimeBaseURL || buildBaseURL || "";
+const baseURL = getBaseURL();
+
+if (!baseURL) {
+  const msg = import.meta.env.DEV
+    ? "Defina VITE_API_BASE_URL no .env (ex.: http://localhost:8080)."
+    : "Defina no Railway a variável VITE_API_BASE_URL (build) ou API_BASE_URL (runtime), ex.: https://sua-api.up.railway.app/api";
+  throw new Error("API base URL não configurada. " + msg);
+}
+
+export const apiBaseURL = baseURL;
 
 export const api = axios.create({
   baseURL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
