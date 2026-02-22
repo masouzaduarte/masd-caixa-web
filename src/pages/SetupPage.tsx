@@ -45,7 +45,7 @@ export function SetupPage() {
           Crie uma nova conta para controlar saldo e transações.
         </p>
       </div>
-      <div className="card" style={{ maxWidth: '420px' }}>
+      <div className="card form-card">
         {error && (
           <div className="error-box">
             {error}
@@ -56,7 +56,7 @@ export function SetupPage() {
             )}
           </div>
         )}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-layout-grid">
           <div className="form-group">
             <label className="label">Nome da conta</label>
             <input
@@ -80,9 +80,11 @@ export function SetupPage() {
               placeholder="0,00"
             />
           </div>
-          <button type="submit" disabled={loading} className="btn btn-primary">
-            {loading ? 'Criando...' : 'Criar conta'}
-          </button>
+          <div className="form-actions">
+            <button type="submit" disabled={loading} className="btn btn-primary">
+              {loading ? 'Criando...' : 'Criar conta'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

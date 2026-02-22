@@ -60,9 +60,9 @@ export function NewTransactionPage() {
           Registrar receita ou despesa na conta em uso.
         </p>
       </div>
-      <div className="card" style={{ maxWidth: '420px' }}>
+      <div className="card form-card">
         {error && <div className="error-box">{error}</div>}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-layout-grid">
           <div className="form-group">
             <label className="label">Tipo</label>
             <select
@@ -75,6 +75,15 @@ export function NewTransactionPage() {
             </select>
           </div>
           <div className="form-group">
+            <label className="label">Data</label>
+            <input
+              type="date"
+              value={transactionDate}
+              onChange={(e) => setTransactionDate(e.target.value)}
+              className="input"
+            />
+          </div>
+          <div className="form-group form-group-full">
             <label className="label">Descrição</label>
             <input
               type="text"
@@ -96,18 +105,11 @@ export function NewTransactionPage() {
               className="input"
             />
           </div>
-          <div className="form-group">
-            <label className="label">Data</label>
-            <input
-              type="date"
-              value={transactionDate}
-              onChange={(e) => setTransactionDate(e.target.value)}
-              className="input"
-            />
+          <div className="form-actions">
+            <button type="submit" disabled={loading} className="btn btn-primary">
+              {loading ? 'Salvando...' : 'Salvar'}
+            </button>
           </div>
-          <button type="submit" disabled={loading} className="btn btn-primary">
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
         </form>
       </div>
     </div>

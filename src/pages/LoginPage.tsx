@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Logo } from '../components/Logo';
 import { login } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
 import { apiBaseURL } from '../api/client';
@@ -32,11 +33,14 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <header className="auth-header">
-        <h1 className="auth-header-title">MASD Caixa</h1>
+        <Logo variant="horizontal" inverse />
         <Link to="/register" className="auth-header-link">Criar conta</Link>
       </header>
       <main className="auth-main">
         <div className="auth-card">
+          <div className="login-logo-wrap">
+            <Logo variant="square" size="large" />
+          </div>
           <div className="page-header">
             <h2 className="page-title">Entrar</h2>
             <p className="page-subtitle">

@@ -172,6 +172,36 @@ body {
   margin-bottom: 1.125rem;
 }
 
+/* Formulários em grid – ocupa melhor o espaço */
+.form-card {
+  max-width: 560px;
+}
+
+.form-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem 1.5rem;
+}
+
+.form-layout-grid .form-group {
+  margin-bottom: 0;
+}
+
+@media (min-width: 520px) {
+  .form-layout-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+}
+
 /* ========== Erro ========== */
 .error-box {
   padding: 0.875rem 1rem;
@@ -278,4 +308,11 @@ body {
 
 .auth-footer-text a:hover {
   text-decoration: underline;
+}
+
+/* Logo grande acima do título Entrar */
+.login-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
 }

@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { getToken, clearToken, clearUser, getUser } from '../storage/authStorage';
 import { clearAccountId } from '../storage/accountStorage';
+import { Logo } from './Logo';
 
 const sidebarLinks = [
   { to: '/', label: 'Dashboard', end: true },
@@ -27,7 +28,7 @@ export function Layout() {
     return (
       <div style={styles.container}>
         <header style={styles.header}>
-          <h1 style={styles.title}>MASD Caixa</h1>
+          <Logo variant="horizontal" inverse />
         </header>
         <main style={styles.main}>
           <Outlet />
@@ -40,7 +41,9 @@ export function Layout() {
     <div style={styles.appLayout}>
       <aside style={styles.sidebar}>
         <div style={styles.sidebarBrand}>
-          <Link to="/" style={styles.sidebarBrandLink}>MASD Caixa</Link>
+          <Link to="/" style={styles.sidebarBrandLink}>
+            <Logo variant="horizontal" inverse />
+          </Link>
         </div>
         <nav style={styles.sidebarNav}>
           {sidebarLinks.map(({ to, label, end }) => {
@@ -113,11 +116,8 @@ const styles: Record<string, React.CSSProperties> = {
     borderBottom: '1px solid rgba(255,255,255,0.08)',
   },
   sidebarBrandLink: {
-    color: '#fff',
+    color: 'inherit',
     textDecoration: 'none',
-    fontSize: '1.2rem',
-    fontWeight: 600,
-    letterSpacing: '-0.02em',
   },
   sidebarNav: {
     flex: 1,
@@ -197,9 +197,10 @@ const styles: Record<string, React.CSSProperties> = {
   header: {
     backgroundColor: 'var(--color-sidebar)',
     color: '#fff',
-    padding: '1rem 1.5rem',
+    padding: '1.125rem 1.75rem',
+    display: 'flex',
+    alignItems: 'center',
   },
-  title: { margin: 0, fontSize: '1.5rem' },
   main: {
     padding: '1.5rem',
     maxWidth: '900px',
