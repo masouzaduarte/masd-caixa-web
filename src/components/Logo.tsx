@@ -1,5 +1,5 @@
 interface LogoProps {
-  variant?: 'horizontal' | 'square';
+  variant?: 'horizontal' | 'square' | 'icon';
   /** Use em fundos escuros (sidebar, header de login) para texto branco */
   inverse?: boolean;
   /** Tamanho maior para destaque (ex.: acima do título Entrar) */
@@ -23,6 +23,14 @@ export function Logo({
   const accentStyle: React.CSSProperties = inverse
     ? { color: 'rgba(255,255,255,0.9)' }
     : { color: 'var(--color-primary)' };
+
+  if (variant === 'icon') {
+    return (
+      <div className={className} style={{ display: 'inline-flex' }} aria-hidden>
+        <DashboardIcon size={iconSizes[size]} />
+      </div>
+    );
+  }
 
   if (variant === 'square') {
     return (

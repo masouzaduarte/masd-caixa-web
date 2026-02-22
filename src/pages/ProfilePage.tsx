@@ -26,7 +26,7 @@ export function ProfilePage() {
     <div>
       <div className="page-header">
         <h2 className="page-title">Meu perfil</h2>
-        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+        <p className="page-subtitle">
           Estes dados são exibidos no sistema. A alteração de e-mail/senha no servidor estará disponível em breve.
         </p>
       </div>

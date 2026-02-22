@@ -21,7 +21,7 @@ export function AccountTransactionsPage() {
     ])
       .then(([txRes, balanceRes, account]) => {
         setTransactions(txRes.data);
-        setBalance(balanceRes.data.balance);
+        setBalance(balanceRes.data.currentBalance);
         setAccountName(account?.name ?? 'Conta');
       })
       .catch(() => setError('Erro ao carregar transações.'))

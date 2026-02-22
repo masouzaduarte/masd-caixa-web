@@ -21,7 +21,10 @@ export interface AccountResponse {
 
 export interface AccountBalanceResponse {
   accountId: string;
-  balance: number;
+  initialBalance: number;
+  totalIncome: number;
+  totalExpense: number;
+  currentBalance: number;
 }
 
 export interface AccountDashboardResponse {
@@ -32,6 +35,20 @@ export interface AccountDashboardResponse {
   alert: string | null;
 }
 
+export interface CategoryDTO {
+  id: string;
+  name: string;
+  color: string;
+}
+
+export interface CategoryAnalyticsDTO {
+  categoryId: string | null;
+  name: string;
+  color: string;
+  totalAmount: number;
+  percentage: number;
+}
+
 export interface TransactionResponse {
   id: string;
   accountId: string;
@@ -40,4 +57,62 @@ export interface TransactionResponse {
   amount: number;
   transactionDate: string;
   createdAt?: string;
+  category?: CategoryDTO | null;
+}
+
+export interface TransactionListItemResponse {
+  id: string;
+  type: string;
+  description: string | null;
+  amount: number;
+  transactionDate: string;
+  createdAt: string;
+  category?: CategoryDTO | null;
+}
+
+export interface TransactionPageResponse {
+  accountId: string;
+  from: string;
+  to: string;
+  totalIncome: number;
+  totalExpense: number;
+  netTotal: number;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  items: TransactionListItemResponse[];
+}
+
+export interface AccountPeriodRuleResponse {
+  accountId: string;
+  mode: string;
+  closingDay: number | null;
+  cycleDays: number | null;
+  anchorDate: string | null;
+  updatedAt: string;
+}
+
+export interface PeriodRangeResponse {
+  accountId: string;
+  startDate: string;
+  endDate: string;
+  label: string;
+  mode: string;
+  closingDay: number | null;
+  cycleDays: number | null;
+}
+
+export interface ImportFailureItem {
+  lineNumber: number;
+  reason: string;
+  raw: string;
+}
+
+export interface ImportTransactionsResponse {
+  accountId: string;
+  totalLines: number;
+  importedCount: number;
+  failedCount: number;
+  failures: ImportFailureItem[];
 }

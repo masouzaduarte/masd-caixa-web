@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAccountId } from '../storage/accountStorage';
-import { createTransaction } from '../api/masdApi';
+import { createTransaction, getCategories } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
 import { apiBaseURL } from '../api/client';
+import type { CategoryDTO } from '../types/dto';
 
 function todayISO() {
   const d = new Date();
@@ -17,12 +18,20 @@ export function NewTransactionPage() {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [transactionDate, setTransactionDate] = useState(todayISO());
+  const [categoryId, setCategoryId] = useState<string>('');
+  const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!accountId) navigate('/setup');
   }, [accountId, navigate]);
+
+  useEffect(() => {
+    getCategories()
+      .then((res) => setCategories(res.data))
+      .catch(() => {});
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,6 +50,7 @@ export function NewTransactionPage() {
         description: description.trim() || undefined,
         amount: amt,
         transactionDate,
+        categoryId: categoryId || undefined,
       });
       navigate('/');
     } catch (err: unknown) {
@@ -82,6 +92,19 @@ export function NewTransactionPage() {
               onChange={(e) => setTransactionDate(e.target.value)}
               className="input"
             />
+          </div>
+          <div className="form-group">
+            <label className="label">Categoria</label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="input"
+            >
+              <option value="">Sem categoria</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
           <div className="form-group form-group-full">
             <label className="label">Descrição</label>

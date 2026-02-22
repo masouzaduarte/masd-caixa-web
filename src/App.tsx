@@ -7,8 +7,11 @@ import { SetupPage } from './pages/SetupPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { AccountsPage } from './pages/AccountsPage';
-import { AccountTransactionsPage } from './pages/AccountTransactionsPage';
+import { TransactionsPage } from './pages/TransactionsPage';
+import { ImportTransactionsPage } from './pages/ImportTransactionsPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { PeriodConfigPage } from './pages/PeriodConfigPage';
+import { CategoriesPage } from './pages/CategoriesPage';
 import { getAccountId } from './storage/accountStorage';
 
 function RequireAccountId({ children }: { children: React.ReactNode }) {
@@ -43,10 +46,18 @@ export default function App() {
             }
           />
           <Route
-            path="accounts/:accountId"
+            path="accounts/:accountId/transactions"
             element={
               <AuthGuard>
-                <AccountTransactionsPage />
+                <TransactionsPage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="accounts/:accountId/import"
+            element={
+              <AuthGuard>
+                <ImportTransactionsPage />
               </AuthGuard>
             }
           />
@@ -73,6 +84,24 @@ export default function App() {
             element={
               <AuthGuard>
                 <ProfilePage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="period-config"
+            element={
+              <AuthGuard>
+                <RequireAccountId>
+                  <PeriodConfigPage />
+                </RequireAccountId>
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="categories"
+            element={
+              <AuthGuard>
+                <CategoriesPage />
               </AuthGuard>
             }
           />
