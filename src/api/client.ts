@@ -5,10 +5,14 @@ const buildBaseURL = import.meta.env.VITE_API_BASE_URL;
 
 let baseURL = runtimeBaseURL || buildBaseURL;
 
-// Em produção, nunca usar localhost (indica que env.js não foi gerado no container ou variável no serviço errado)
+// Em produção, nunca usar localhost; se env.js veio com localhost, usa VITE_API_BASE_URL (build) como fallback
 const isLocalhost = (url: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(url);
 if (import.meta.env.PROD && baseURL && isLocalhost(baseURL)) {
-  baseURL = "";
+  baseURL = buildBaseURL && !isLocalhost(buildBaseURL) ? buildBaseURL : "";
+}
+// Garante que a URL da API em produção termine em /api (context-path do backend)
+if (import.meta.env.PROD && baseURL && !baseURL.endsWith("/api")) {
+  baseURL = baseURL.replace(/\/?$/, "") + "/api";
 }
 
 // Em dev, se a API for localhost:8080, usa a URL direta do backend com context-path /api (CORS já permite localhost:*)
@@ -18,7 +22,9 @@ if (import.meta.env.DEV && baseURL && devDirectOrigins.includes(baseURL)) {
 }
 
 if (!baseURL && !import.meta.env.DEV) {
-  throw new Error("API base URL não configurada (runtime ou VITE_API_BASE_URL).");
+  throw new Error(
+    "API base URL não configurada. Em produção (Railway): defina a variável API_BASE_URL no serviço do FRONTEND (masd-caixa-web), ex.: https://sua-api.up.railway.app/api"
+  );
 }
 if (import.meta.env.DEV && !baseURL && !runtimeBaseURL && !buildBaseURL) {
   throw new Error("API base URL não configurada (runtime ou VITE_API_BASE_URL).");
