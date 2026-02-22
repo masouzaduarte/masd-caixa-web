@@ -7,11 +7,3 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
-
-declare global {
-  interface Window {
-    MASD_CAIXA?: { API_BASE_URL?: string };
-  }
-}
-
-export {};
