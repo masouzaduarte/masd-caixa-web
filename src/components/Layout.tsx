@@ -93,7 +93,7 @@ export function Layout() {
         mobileOpen={sidebarMobileOpen}
         isMobile={isMobile}
         onClose={() => setSidebarMobileOpen(false)}
-        onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         accountId={accountId}
         onSair={handleSair}
       />

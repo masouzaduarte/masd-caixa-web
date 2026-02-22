@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getAccountTransactions, getBalance } from '../api/masdApi';
-import { listAccounts } from '../api/masdApi';
-import type { TransactionResponse } from '../types/dto';
+import { getTransactions, getBalance, listAccounts } from '../api/masdApi';
+import type { TransactionListItemResponse } from '../types/dto';
 
 export function AccountTransactionsPage() {
   const { accountId } = useParams<{ accountId: string }>();
-  const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
+  const [transactions, setTransactions] = useState<TransactionListItemResponse[]>([]);
   const [accountName, setAccountName] = useState<string>('');
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -14,13 +13,16 @@ export function AccountTransactionsPage() {
 
   useEffect(() => {
     if (!accountId) return;
+    const now = new Date();
+    const to = now.toISOString().slice(0, 10);
+    const from = new Date(now.getFullYear() - 2, 0, 1).toISOString().slice(0, 10);
     Promise.all([
-      getAccountTransactions(accountId),
+      getTransactions(accountId, { from, to, size: 500 }),
       getBalance(accountId),
       listAccounts().then((r) => r.data.find((a) => a.id === accountId)),
     ])
       .then(([txRes, balanceRes, account]) => {
-        setTransactions(txRes.data);
+        setTransactions(txRes.data.items);
         setBalance(balanceRes.data.currentBalance);
         setAccountName(account?.name ?? 'Conta');
       })

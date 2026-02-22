@@ -55,7 +55,7 @@ export function PeriodConfigPage() {
       payload.cycleDays = cycleDays;
       payload.anchorDate = anchorDate || undefined;
     }
-    upsertAccountPeriodRule(accountId, payload)
+    upsertAccountPeriodRule(accountId!, payload)
       .then(() => {
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title, type TooltipItem } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 import { getAccountId } from '../storage/accountStorage';
 import { getDashboard, getCategoryAnalytics } from '../api/masdApi';
@@ -102,7 +102,7 @@ export function DashboardPage() {
       legend: { position: 'top' as const },
       tooltip: {
         callbacks: {
-          label: (ctx: { raw: number }) => formatCurrency(ctx.raw),
+          label: (ctx: TooltipItem<'bar'>) => formatCurrency(Number(ctx.raw)),
         },
       },
     },
@@ -110,7 +110,7 @@ export function DashboardPage() {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value: number) => formatCurrency(value),
+          callback: (value: string | number) => formatCurrency(Number(value)),
         },
       },
     },
@@ -122,10 +122,12 @@ export function DashboardPage() {
       legend: { position: 'right' as const },
       tooltip: {
         callbacks: {
-          label: (ctx: { label: string; raw: number; chart: { data: { datasets: { data: number[] }[] } } }) => {
-            const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-            const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : '0';
-            return `${ctx.label}: ${formatCurrency(ctx.raw)} (${pct}%)`;
+          label: (ctx: TooltipItem<'pie'>) => {
+            const raw = Number(ctx.raw);
+            const data = (ctx.chart?.data?.datasets?.[0]?.data ?? []) as number[];
+            const total = data.reduce((a, b) => a + b, 0);
+            const pct = total > 0 ? ((raw / total) * 100).toFixed(1) : '0';
+            return `${ctx.label}: ${formatCurrency(raw)} (${pct}%)`;
           },
         },
       },
