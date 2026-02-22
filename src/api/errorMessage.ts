@@ -11,8 +11,10 @@ export function getApiErrorMessage(err: unknown, defaultMessage: string, apiUrl?
   }
   const axiosErr = err as AxiosError<{ message?: string; error?: string; detail?: string; errors?: Array<{ defaultMessage?: string }> }>;
   const data = axiosErr.response?.data;
+  const status = axiosErr.response?.status;
   if (!data) {
-    const status = axiosErr.response?.status;
+    if (status === 403) return "Sessão expirada ou acesso negado. Faça login novamente.";
+    if (status === 401) return "Não autorizado. Faça login novamente.";
     if (status != null) return `${defaultMessage} (HTTP ${status})`;
     const hint = apiUrl
       ? ` Verifique se a API está rodando em ${apiUrl} e se CORS está habilitado.`
@@ -27,5 +29,7 @@ export function getApiErrorMessage(err: unknown, defaultMessage: string, apiUrl?
     const msg = first?.defaultMessage ?? (typeof first === 'string' ? first : null);
     if (msg) return msg;
   }
+  if (status === 403) return "Sessão expirada ou acesso negado. Faça login novamente.";
+  if (status === 401) return "Não autorizado. Faça login novamente.";
   return defaultMessage;
 }

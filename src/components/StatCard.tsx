@@ -15,19 +15,20 @@ export function StatCard({ label, value }: StatCardProps) {
 const styles: Record<string, React.CSSProperties> = {
   card: {
     padding: '1rem 1.25rem',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    backgroundColor: '#fafafa',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius)',
+    backgroundColor: 'var(--color-surface)',
     minWidth: '140px',
+    boxShadow: 'var(--shadow-sm)',
   },
   label: {
     fontSize: '0.85rem',
-    color: '#666',
+    color: 'var(--color-text-muted)',
     marginBottom: '0.25rem',
   },
   value: {
     fontSize: '1.25rem',
     fontWeight: 600,
-    color: '#222',
+    color: 'var(--color-text)',
   },
 };

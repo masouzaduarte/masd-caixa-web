@@ -13,10 +13,11 @@ export function AlertBanner({ message }: AlertBannerProps) {
 const styles: Record<string, React.CSSProperties> = {
   banner: {
     padding: '0.75rem 1rem',
-    backgroundColor: '#fff3cd',
-    border: '1px solid #ffc107',
-    borderRadius: '8px',
-    color: '#856404',
+    backgroundColor: '#fef3c7',
+    border: '1px solid #f59e0b',
+    borderRadius: 'var(--radius)',
+    color: '#92400e',
     marginBottom: '1rem',
+    fontSize: '0.875rem',
   },
 };

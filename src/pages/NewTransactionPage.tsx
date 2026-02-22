@@ -53,79 +53,63 @@ export function NewTransactionPage() {
   if (!accountId) return null;
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Nova Transação</h2>
-      {error && <div style={styles.error}>{error}</div>}
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.field}>
-          <label>Tipo</label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value as 'INCOME' | 'EXPENSE')}
-            style={styles.input}
-          >
-            <option value="INCOME">Receita</option>
-            <option value="EXPENSE">Despesa</option>
-          </select>
-        </div>
-        <div style={styles.field}>
-          <label>Descrição</label>
-          <input
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.field}>
-          <label>Valor</label>
-          <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.field}>
-          <label>Data</label>
-          <input
-            type="date"
-            value={transactionDate}
-            onChange={(e) => setTransactionDate(e.target.value)}
-            style={styles.input}
-          />
-        </div>
-        <button type="submit" disabled={loading} style={styles.submit}>
-          {loading ? 'Salvando...' : 'Salvar'}
-        </button>
-      </form>
+    <div>
+      <div className="page-header">
+        <h2 className="page-title">Nova Transação</h2>
+        <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
+          Registrar receita ou despesa na conta em uso.
+        </p>
+      </div>
+      <div className="card" style={{ maxWidth: '420px' }}>
+        {error && <div className="error-box">{error}</div>}
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label className="label">Tipo</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value as 'INCOME' | 'EXPENSE')}
+              className="input"
+            >
+              <option value="INCOME">Receita</option>
+              <option value="EXPENSE">Despesa</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="label">Descrição</label>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="input"
+              placeholder="Opcional"
+            />
+          </div>
+          <div className="form-group">
+            <label className="label">Valor</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+              className="input"
+            />
+          </div>
+          <div className="form-group">
+            <label className="label">Data</label>
+            <input
+              type="date"
+              value={transactionDate}
+              onChange={(e) => setTransactionDate(e.target.value)}
+              className="input"
+            />
+          </div>
+          <button type="submit" disabled={loading} className="btn btn-primary">
+            {loading ? 'Salvando...' : 'Salvar'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: { maxWidth: '400px' },
-  title: { marginBottom: '1rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '1rem' },
-  field: { display: 'flex', flexDirection: 'column', gap: '0.25rem' },
-  input: { padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' },
-  submit: {
-    padding: '0.6rem 1rem',
-    backgroundColor: '#2c3e50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  },
-  error: {
-    padding: '0.75rem',
-    backgroundColor: '#f8d7da',
-    border: '1px solid #f5c6cb',
-    borderRadius: '4px',
-    color: '#721c24',
-    marginBottom: '1rem',
-  },
-};

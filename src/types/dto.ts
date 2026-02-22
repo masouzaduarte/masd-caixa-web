@@ -1,3 +1,11 @@
+export interface AuthResponse {
+  token: string;
+  userId: string;
+  companyId: string;
+  name: string;
+  email: string;
+}
+
 export interface CompanyResponse {
   id: string;
   name: string;
@@ -31,4 +39,5 @@ export interface TransactionResponse {
   description?: string;
   amount: number;
   transactionDate: string;
+  createdAt?: string;
 }
