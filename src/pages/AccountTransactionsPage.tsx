@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { getAccountTransactions, getBalance } from '../api/masdApi';
 import { listAccounts } from '../api/masdApi';
 import type { TransactionResponse } from '../types/dto';
 
 export function AccountTransactionsPage() {
   const { accountId } = useParams<{ accountId: string }>();
-  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [accountName, setAccountName] = useState<string>('');
   const [balance, setBalance] = useState<number | null>(null);

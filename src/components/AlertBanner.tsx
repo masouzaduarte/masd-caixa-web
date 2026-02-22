@@ -12,12 +12,12 @@ export function AlertBanner({ message }: AlertBannerProps) {
 
 const styles: Record<string, React.CSSProperties> = {
   banner: {
-    padding: '0.75rem 1rem',
-    backgroundColor: '#fef3c7',
-    border: '1px solid #f59e0b',
-    borderRadius: 'var(--radius)',
+    padding: '0.875rem 1.125rem',
+    backgroundColor: 'var(--color-warning-bg)',
+    border: '1px solid var(--color-warning-border)',
+    borderRadius: 'var(--radius-sm)',
     color: '#92400e',
-    marginBottom: '1rem',
+    marginBottom: '1.25rem',
     fontSize: '0.875rem',
   },
 };

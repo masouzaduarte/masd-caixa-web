@@ -31,62 +31,80 @@ export function RegisterPage() {
   }
 
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <h1 style={styles.appTitle}>MASD Caixa</h1>
-        <Link to="/login" style={styles.headerLink}>Entrar</Link>
+    <div className="auth-page">
+      <header className="auth-header">
+        <h1 className="auth-header-title">MASD Caixa</h1>
+        <Link to="/login" className="auth-header-link">Entrar</Link>
       </header>
-      <main style={styles.main}>
-        <div style={styles.container}>
-          <h2 style={styles.title}>Criar conta</h2>
-          {error && <div style={styles.error}>{error}</div>}
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <div style={styles.field}>
-              <label>Nome</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label>Nome da empresa</label>
-              <input
-                type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label>E-mail</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label>Senha (mín. 6 caracteres)</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                style={styles.input}
-              />
-            </div>
-            <button type="submit" disabled={loading} style={styles.submit}>
-              {loading ? 'Criando...' : 'Criar conta'}
-            </button>
-          </form>
-          <p style={styles.footer}>
+      <main className="auth-main">
+        <div className="auth-card">
+          <div className="page-header">
+            <h2 className="page-title">Criar conta</h2>
+            <p className="page-subtitle">
+              Preencha os dados para começar.
+            </p>
+          </div>
+          <div className="card">
+            {error && <div className="error-box">{error}</div>}
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label className="label" htmlFor="register-name">Nome</label>
+                <input
+                  id="register-name"
+                  type="text"
+                  className="input"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  placeholder="Seu nome"
+                  autoComplete="name"
+                />
+              </div>
+              <div className="form-group">
+                <label className="label" htmlFor="register-company">Nome da empresa</label>
+                <input
+                  id="register-company"
+                  type="text"
+                  className="input"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  required
+                  placeholder="Nome da empresa"
+                />
+              </div>
+              <div className="form-group">
+                <label className="label" htmlFor="register-email">E-mail</label>
+                <input
+                  id="register-email"
+                  type="email"
+                  className="input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="seu@email.com"
+                  autoComplete="email"
+                />
+              </div>
+              <div className="form-group">
+                <label className="label" htmlFor="register-password">Senha (mín. 6 caracteres)</label>
+                <input
+                  id="register-password"
+                  type="password"
+                  className="input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+              </div>
+              <button type="submit" disabled={loading} className="btn btn-primary">
+                {loading ? 'Criando...' : 'Criar conta'}
+              </button>
+            </form>
+          </div>
+          <p className="auth-footer-text">
             Já tem conta? <Link to="/login">Entrar</Link>
           </p>
         </div>
@@ -94,47 +112,3 @@ export function RegisterPage() {
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    minHeight: '100vh',
-    backgroundColor: 'var(--color-bg)',
-  },
-  header: {
-    backgroundColor: 'var(--color-sidebar)',
-    color: '#fff',
-    padding: '1rem 1.5rem',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  appTitle: { margin: 0, fontSize: '1.5rem' },
-  headerLink: { color: '#fff', textDecoration: 'none' },
-  main: {
-    padding: '1.5rem',
-    maxWidth: '900px',
-    margin: '0 auto',
-  },
-  container: { maxWidth: '400px' },
-  title: { marginBottom: '1rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '1rem' },
-  field: { display: 'flex', flexDirection: 'column', gap: '0.25rem' },
-  input: { padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc' },
-  submit: {
-    padding: '0.6rem 1rem',
-    backgroundColor: '#2c3e50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  },
-  error: {
-    padding: '0.75rem',
-    backgroundColor: '#f8d7da',
-    border: '1px solid #f5c6cb',
-    borderRadius: '4px',
-    color: '#721c24',
-    marginBottom: '1rem',
-  },
-  footer: { marginTop: '1rem' },
-};

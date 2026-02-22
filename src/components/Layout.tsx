@@ -51,10 +51,7 @@ export function Layout() {
               <Link
                 key={to}
                 to={to}
-                style={{
-                  ...styles.sidebarLink,
-                  ...(isActive ? styles.sidebarLinkActive : {}),
-                }}
+                className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
               >
                 {label}
               </Link>
@@ -62,7 +59,7 @@ export function Layout() {
           })}
         </nav>
         <div style={styles.sidebarFooter}>
-          <button type="button" onClick={handleSair} style={styles.sidebarButton}>
+          <button type="button" onClick={handleSair} className="sidebar-btn" style={styles.sidebarButton}>
             Sair
           </button>
         </div>
@@ -102,7 +99,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: 'var(--sidebar-width)',
     flexShrink: 0,
     background: 'var(--color-sidebar)',
-    color: '#e2e8f0',
+    color: 'var(--color-text-inverse)',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
@@ -112,45 +109,35 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 100,
   },
   sidebarBrand: {
-    padding: '1.25rem 1rem',
+    padding: '1.375rem 1.25rem',
     borderBottom: '1px solid rgba(255,255,255,0.08)',
   },
   sidebarBrandLink: {
     color: '#fff',
     textDecoration: 'none',
-    fontSize: '1.125rem',
+    fontSize: '1.2rem',
     fontWeight: 600,
+    letterSpacing: '-0.02em',
   },
   sidebarNav: {
     flex: 1,
-    padding: '0.75rem 0',
+    padding: '0.875rem 0',
     overflowY: 'auto',
   },
-  sidebarLink: {
-    display: 'block',
-    padding: '0.6rem 1rem',
-    color: '#94a3b8',
-    textDecoration: 'none',
-    fontSize: '0.9rem',
-    transition: 'background 0.15s, color 0.15s',
-  },
-  sidebarLinkActive: {
-    background: 'var(--color-sidebar-hover)',
-    color: '#fff',
-  },
   sidebarFooter: {
-    padding: '1rem',
+    padding: '1.125rem 1rem',
     borderTop: '1px solid rgba(255,255,255,0.08)',
   },
   sidebarButton: {
     width: '100%',
-    padding: '0.5rem 1rem',
+    padding: '0.5625rem 1rem',
     background: 'transparent',
-    border: '1px solid rgba(255,255,255,0.2)',
-    color: '#e2e8f0',
-    borderRadius: 'var(--radius)',
+    border: '1px solid rgba(255,255,255,0.25)',
+    color: 'var(--color-text-inverse)',
+    borderRadius: 'var(--radius-sm)',
     cursor: 'pointer',
     fontSize: '0.875rem',
+    transition: 'background 0.2s ease, border-color 0.2s ease',
   },
   mainWrap: {
     flex: 1,
@@ -161,18 +148,20 @@ const styles: Record<string, React.CSSProperties> = {
   },
   topbar: {
     background: 'var(--color-surface)',
-    padding: '0.75rem 1.5rem',
+    padding: '1rem 1.75rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     boxShadow: 'var(--shadow-sm)',
+    borderBottom: '1px solid var(--color-border-light)',
     flexWrap: 'wrap',
     gap: '0.5rem',
   },
   topbarTitle: {
-    fontSize: '1.125rem',
+    fontSize: '1.1875rem',
     fontWeight: 600,
     color: 'var(--color-text)',
+    letterSpacing: '-0.02em',
   },
   userBlock: {
     display: 'flex',
@@ -184,18 +173,19 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--color-text-muted)',
   },
   topbarSair: {
-    padding: '0.35rem 0.75rem',
+    padding: '0.4rem 0.875rem',
     background: 'transparent',
     border: '1px solid var(--color-border)',
     color: 'var(--color-text-muted)',
-    borderRadius: 'var(--radius)',
+    borderRadius: 'var(--radius-sm)',
     cursor: 'pointer',
-    fontSize: '0.8rem',
+    fontSize: '0.8125rem',
+    transition: 'background 0.2s ease, border-color 0.2s ease',
   },
   content: {
     flex: 1,
-    padding: '1.5rem',
-    maxWidth: '1000px',
+    padding: '1.75rem',
+    maxWidth: '1024px',
     width: '100%',
     margin: '0 auto',
     alignSelf: 'center',
