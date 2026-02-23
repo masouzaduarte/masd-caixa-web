@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getUser, setUser, setToken } from '../storage/authStorage';
 import { googleLink } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, googleClientId } from '../api/client';
+import { apiBaseURL, getGoogleClientId, fetchGoogleClientIdFromApi } from '../api/client';
 
 export function ProfilePage() {
   const stored = getUser();
@@ -13,6 +13,12 @@ export function ProfilePage() {
   const [linkError, setLinkError] = useState<string | null>(null);
   const [linkSuccess, setLinkSuccess] = useState(false);
   const googleLinkButtonRef = useRef<HTMLDivElement>(null);
+  const [googleClientId, setGoogleClientId] = useState(() => getGoogleClientId());
+
+  useEffect(() => {
+    if (googleClientId) return;
+    fetchGoogleClientIdFromApi().then((id) => id && setGoogleClientId(getGoogleClientId()));
+  }, [googleClientId]);
 
   const authProvider = stored?.authProvider ?? 'LOCAL';
   const linkedGoogleEmail = stored?.linkedGoogleEmail;

@@ -24,21 +24,45 @@ export const apiBaseURL = baseURL;
 
 const runtimeGoogleId = w?.GOOGLE_CLIENT_ID ?? "";
 const buildGoogleId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
-/** Em dev: sempre usar .env (config.js não existe). Em prod: runtime (config.js) ou build. */
+/** Valor no load do módulo (para compat). */
 export const googleClientId = import.meta.env.DEV ? buildGoogleId : (runtimeGoogleId || buildGoogleId);
+/** Lido na hora (para quando a API preencher window.MASD_CAIXA.GOOGLE_CLIENT_ID). */
 export function getGoogleClientId(): string {
-  return googleClientId;
+  if (typeof window === "undefined") return googleClientId;
+  const r = (window as WindowConfig).MASD_CAIXA?.GOOGLE_CLIENT_ID;
+  return (r ?? googleClientId) || "";
+}
+
+/** Fallback: busca GOOGLE_CLIENT_ID na API (backend tem a variável). Atualiza window.MASD_CAIXA. */
+export async function fetchGoogleClientIdFromApi(): Promise<string> {
+  if (typeof window === "undefined") return "";
+  if (getGoogleClientId()) return getGoogleClientId();
+  try {
+    const res = await fetch(`${baseURL}/config`, { credentials: "omit" });
+    if (!res.ok) return "";
+    const data = (await res.json()) as { googleClientId?: string };
+    const id = (data.googleClientId ?? "").trim();
+    if (id) {
+      const win = window as WindowConfig & { MASD_CAIXA?: Record<string, string> };
+      if (!win.MASD_CAIXA) win.MASD_CAIXA = {};
+      win.MASD_CAIXA.GOOGLE_CLIENT_ID = id;
+    }
+    return id;
+  } catch {
+    return "";
+  }
 }
 
 /** Objeto de debug: sempre exposto em window. No console digite: __MASD_CAIXA_DEBUG__ */
 function getConfigDebugSnapshot() {
+  const gid = getGoogleClientId();
   return {
     "window.MASD_CAIXA existe?": !!w,
     "API_BASE_URL (runtime)": runtimeBaseURL || "(vazio)",
     "API_BASE_URL (build)": buildBaseURL ? "***" : "(vazio)",
     "GOOGLE_CLIENT_ID (runtime)": runtimeGoogleId ? `${runtimeGoogleId.slice(0, 20)}...` : "(vazio)",
     "GOOGLE_CLIENT_ID (build)": buildGoogleId ? "***" : "(vazio)",
-    "googleClientId final": googleClientId ? "preenchido" : "VAZIO",
+    "googleClientId final": gid ? "preenchido" : "VAZIO",
   };
 }
 

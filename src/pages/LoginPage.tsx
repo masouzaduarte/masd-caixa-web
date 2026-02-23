@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { login, googleStart } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, googleClientId, logConfigDebug } from '../api/client';
+import { apiBaseURL, getGoogleClientId, fetchGoogleClientIdFromApi, logConfigDebug } from '../api/client';
 import { useDebugConfig } from '../hooks/useDebugConfig';
 import { setToken, setUser } from '../storage/authStorage';
 
@@ -46,6 +46,12 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [linkRequiredModal, setLinkRequiredModal] = useState(false);
   const googleButtonRef = useRef<HTMLDivElement>(null);
+  const [googleClientId, setGoogleClientId] = useState(() => getGoogleClientId());
+
+  useEffect(() => {
+    if (googleClientId) return;
+    fetchGoogleClientIdFromApi().then((id) => id && setGoogleClientId(getGoogleClientId()));
+  }, [googleClientId]);
 
   const handleGoogleCredential = useCallback((credential: string) => {
     setError(null);
