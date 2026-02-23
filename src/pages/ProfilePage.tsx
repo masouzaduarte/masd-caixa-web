@@ -13,6 +13,7 @@ export function ProfilePage() {
   const [linkError, setLinkError] = useState<string | null>(null);
   const [linkSuccess, setLinkSuccess] = useState(false);
   const googleLinkButtonRef = useRef<HTMLDivElement>(null);
+  const [googleClientId, setGoogleClientId] = useState(getGoogleClientId);
 
   const authProvider = stored?.authProvider ?? 'LOCAL';
   const linkedGoogleEmail = stored?.linkedGoogleEmail;
