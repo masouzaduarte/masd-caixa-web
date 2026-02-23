@@ -1,11 +1,11 @@
 import axios from "axios";
 import { getToken, clearToken } from "../storage/authStorage";
 
-/**
- * URL da API: runtime (window.MASD_CAIXA.API_BASE_URL) ou build (VITE_API_BASE_URL).
- * O app adiciona /api no final (context-path do backend).
- */
-const runtimeBaseURL = typeof window !== "undefined" ? (window as { MASD_CAIXA?: { API_BASE_URL?: string } }).MASD_CAIXA?.API_BASE_URL : undefined;
+/** Mesma estratégia para API e Google: runtime (config.js) primeiro, depois build (VITE_*). */
+type WindowConfig = { MASD_CAIXA?: { API_BASE_URL?: string; GOOGLE_CLIENT_ID?: string } };
+const w = typeof window !== "undefined" ? (window as WindowConfig).MASD_CAIXA : undefined;
+
+const runtimeBaseURL = w?.API_BASE_URL;
 const buildBaseURL = import.meta.env.VITE_API_BASE_URL ?? "";
 let baseURL = runtimeBaseURL || buildBaseURL;
 if (baseURL && !baseURL.endsWith("/api")) {
@@ -22,25 +22,12 @@ if (!baseURL) {
 
 export const apiBaseURL = baseURL;
 
-/** Google Client ID: runtime (window.MASD_CAIXA.GOOGLE_CLIENT_ID) ou build (VITE_GOOGLE_CLIENT_ID). */
+const runtimeGoogleId = w?.GOOGLE_CLIENT_ID ?? "";
+const buildGoogleId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+/** Mesmo critério que API_BASE_URL: runtime (config.js) ou build (VITE_GOOGLE_CLIENT_ID). */
+export const googleClientId = runtimeGoogleId || buildGoogleId;
 export function getGoogleClientId(): string {
-  if (typeof window === "undefined") return "";
-  const w = window as { MASD_CAIXA?: { GOOGLE_CLIENT_ID?: string } };
-  return w.MASD_CAIXA?.GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-}
-
-/** Carrega /config.js dinamicamente (produção Docker). Resolve quando o script terminar ou após 2s. */
-export function loadRuntimeConfig(): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  if ((window as { MASD_CAIXA?: unknown }).MASD_CAIXA != null) return Promise.resolve();
-  return new Promise((resolve) => {
-    const script = document.createElement("script");
-    script.src = "/config.js";
-    script.onload = () => resolve();
-    script.onerror = () => resolve();
-    document.head.appendChild(script);
-    setTimeout(resolve, 2000);
-  });
+  return googleClientId;
 }
 
 export const api = axios.create({
