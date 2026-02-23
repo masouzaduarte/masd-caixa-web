@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { login, googleStart } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, googleClientId } from '../api/client';
+import { apiBaseURL, googleClientId, logConfigDebug } from '../api/client';
 import { useDebugConfig } from '../hooks/useDebugConfig';
 import { setToken, setUser } from '../storage/authStorage';
 
@@ -35,6 +35,10 @@ export function LoginPage() {
   const [searchParams] = useSearchParams();
   const showDebug = searchParams.get('debug') === '1';
   const debug = useDebugConfig(showDebug);
+
+  useEffect(() => {
+    if (showDebug) logConfigDebug();
+  }, [showDebug]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
