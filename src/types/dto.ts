@@ -4,6 +4,17 @@ export interface AuthResponse {
   companyId: string;
   name: string;
   email: string;
+  authProvider?: string; // 'LOCAL' | 'GOOGLE' | 'LOCAL_GOOGLE'
+  linkedGoogleEmail?: string | null;
+}
+
+export interface GoogleStartResponse {
+  status: 'EXISTING_USER' | 'NEEDS_COMPANY' | 'LINK_REQUIRED';
+  email?: string;
+  name?: string;
+  googleSub?: string;
+  tempToken?: string;
+  auth?: AuthResponse;
 }
 
 export interface CompanyResponse {

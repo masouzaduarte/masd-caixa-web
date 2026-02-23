@@ -1,7 +1,9 @@
+import axios from 'axios';
 import { api, apiBaseURL } from './client';
 import { getToken } from '../storage/authStorage';
 import type {
   AuthResponse,
+  GoogleStartResponse,
   AccountResponse,
   AccountBalanceResponse,
   AccountDashboardResponse,
@@ -21,6 +23,38 @@ export function register(payload: {
 
 export function login(payload: { email: string; password: string }) {
   return api.post<AuthResponse>('/auth/login', payload);
+}
+
+/** POST /auth/google/start — sem Authorization. */
+export function googleStart(idToken: string) {
+  return api.post<GoogleStartResponse>('/auth/google/start', { idToken });
+}
+
+/** POST /auth/google/link — requer JWT. */
+export function googleLink(idToken: string) {
+  return api.post<AuthResponse>('/auth/google/link', { idToken });
+}
+
+/** POST /auth/forgot-password — sem Authorization. */
+export function forgotPassword(email: string): Promise<void> {
+  return axios
+    .post(
+      `${apiBaseURL.replace(/\/$/, '')}/auth/forgot-password`,
+      { email },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+    .then(() => undefined);
+}
+
+/** POST /auth/reset-password — sem Authorization. */
+export function resetPassword(token: string, newPassword: string): Promise<void> {
+  return axios
+    .post(
+      `${apiBaseURL.replace(/\/$/, '')}/auth/reset-password`,
+      { token, newPassword },
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+    .then(() => undefined);
 }
 
 export function createAccount(payload: { name: string; initialBalance: number }) {

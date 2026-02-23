@@ -22,6 +22,12 @@ if (!baseURL) {
 
 export const apiBaseURL = baseURL;
 
+/** Google Client ID: runtime (window.MASD_CAIXA.GOOGLE_CLIENT_ID) ou build (VITE_GOOGLE_CLIENT_ID). */
+export const googleClientId =
+  (typeof window !== "undefined" && (window as { MASD_CAIXA?: { GOOGLE_CLIENT_ID?: string } }).MASD_CAIXA?.GOOGLE_CLIENT_ID) ||
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  "";
+
 export const api = axios.create({
   baseURL,
   headers: { "Content-Type": "application/json" },

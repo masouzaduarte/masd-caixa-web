@@ -1,11 +1,35 @@
-import { useState, useEffect } from 'react';
-import { getUser, setUser } from '../storage/authStorage';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { getUser, setUser, setToken } from '../storage/authStorage';
+import { googleLink } from '../api/masdApi';
+import { getApiErrorMessage } from '../api/errorMessage';
+import { apiBaseURL, googleClientId } from '../api/client';
+
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: { client_id: string; callback: (r: { credential: string }) => void }) => void;
+          renderButton: (el: HTMLElement | null, config: { type?: string; theme?: string; size?: string; text?: string }) => void;
+        };
+      };
+    };
+  }
+}
 
 export function ProfilePage() {
   const stored = getUser();
   const [name, setName] = useState(stored?.name ?? '');
   const [email, setEmail] = useState(stored?.email ?? '');
   const [saved, setSaved] = useState(false);
+  const [linkLoading, setLinkLoading] = useState(false);
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [linkSuccess, setLinkSuccess] = useState(false);
+  const googleLinkButtonRef = useRef<HTMLDivElement>(null);
+
+  const authProvider = stored?.authProvider ?? 'LOCAL';
+  const linkedGoogleEmail = stored?.linkedGoogleEmail;
+  const isGoogleLinked = authProvider === 'LOCAL_GOOGLE' || authProvider === 'GOOGLE';
 
   useEffect(() => {
     const u = getUser();
@@ -15,9 +39,48 @@ export function ProfilePage() {
     }
   }, []);
 
+  const handleGoogleCredential = useCallback((credential: string) => {
+    setLinkError(null);
+    setLinkSuccess(false);
+    setLinkLoading(true);
+    googleLink(credential)
+      .then((res) => {
+        const d = res.data;
+        setToken(d.token);
+        setUser({
+          name: stored?.name ?? d.name,
+          email: stored?.email ?? d.email,
+          authProvider: d.authProvider,
+          linkedGoogleEmail: d.linkedGoogleEmail ?? undefined,
+        });
+        setLinkSuccess(true);
+        setTimeout(() => setLinkSuccess(false), 4000);
+      })
+      .catch((err: unknown) => {
+        setLinkError(getApiErrorMessage(err, 'Não foi possível vincular.', apiBaseURL));
+      })
+      .finally(() => setLinkLoading(false));
+  }, [stored?.name, stored?.email]);
+
+  useEffect(() => {
+    if (!googleClientId || !window.google?.accounts?.id || isGoogleLinked) return;
+    window.google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: (r) => handleGoogleCredential(r.credential),
+    });
+    if (googleLinkButtonRef.current) {
+      window.google.accounts.id.renderButton(googleLinkButtonRef.current, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'continue_with',
+      });
+    }
+  }, [googleClientId, isGoogleLinked, handleGoogleCredential]);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setUser({ name: name.trim(), email: email.trim() });
+    setUser({ name: name.trim(), email: email.trim(), authProvider: stored?.authProvider, linkedGoogleEmail: stored?.linkedGoogleEmail });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   }
@@ -66,6 +129,37 @@ export function ProfilePage() {
         <p style={{ marginTop: '1.25rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
           As alterações são salvas apenas neste navegador. Quando a API de perfil estiver disponível, o e-mail e a senha poderão ser atualizados no servidor.
         </p>
+      </div>
+
+      <div className="card" style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem' }}>Conta Google</h3>
+        {isGoogleLinked ? (
+          <p style={{ margin: 0, color: 'var(--color-text)' }}>
+            Conectado com Google: <strong>{linkedGoogleEmail || email}</strong>
+          </p>
+        ) : googleClientId ? (
+          <>
+            <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+              Vincule sua conta Google para poder entrar com ela depois.
+            </p>
+            {linkError && <div className="error-box" style={{ marginBottom: '0.75rem' }}>{linkError}</div>}
+            {linkSuccess && (
+              <p style={{ margin: '0 0 0.75rem 0', color: 'var(--color-success)', fontSize: '0.875rem' }}>
+                Conta Google vinculada com sucesso.
+              </p>
+            )}
+            <div ref={googleLinkButtonRef} />
+            {linkLoading && (
+              <p style={{ marginTop: '0.5rem', marginBottom: 0, fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+                Conectando...
+              </p>
+            )}
+          </>
+        ) : (
+          <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
+            Configure GOOGLE_CLIENT_ID para habilitar login com Google.
+          </p>
+        )}
       </div>
     </div>
   );

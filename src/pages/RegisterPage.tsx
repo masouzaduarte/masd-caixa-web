@@ -21,8 +21,9 @@ export function RegisterPage() {
     setLoading(true);
     try {
       const res = await register({ name, companyName, email, password });
-      setToken(res.data.token);
-      setUser({ name: res.data.name, email: res.data.email });
+      const d = res.data;
+      setToken(d.token);
+      setUser({ name: d.name, email: d.email, authProvider: d.authProvider, linkedGoogleEmail: d.linkedGoogleEmail });
       navigate('/setup');
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, 'Erro ao criar conta.', apiBaseURL));

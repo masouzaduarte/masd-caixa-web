@@ -16,6 +16,8 @@ export function clearToken(): void {
 export interface StoredUser {
   name: string;
   email: string;
+  authProvider?: string;
+  linkedGoogleEmail?: string | null;
 }
 
 export function getUser(): StoredUser | null {
