@@ -200,6 +200,9 @@ export function LoginPage() {
               }}
             >
               <strong style={{ display: 'block', marginBottom: '0.5rem' }}>🔧 Debug (?debug=1)</strong>
+              <p style={{ margin: '0 0 0.5rem 0', color: 'var(--color-warning)', fontWeight: 600 }}>
+                Se o console não mostrar nada: abra o Console (F12) e digite: <code style={{ background: 'rgba(0,0,0,0.2)', padding: '2px 6px' }}>__MASD_CAIXA_DEBUG__</code>
+              </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                 <span><strong>/config.js</strong>: {debug.configJsStatus == null ? 'carregando...' : debug.configJsStatus === 200 ? `200 OK (${debug.configJsBody.length} chars)` : `HTTP ${debug.configJsStatus}`}</span>
                 {debug.configJsBody && (

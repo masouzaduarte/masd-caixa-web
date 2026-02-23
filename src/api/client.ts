@@ -30,17 +30,27 @@ export function getGoogleClientId(): string {
   return googleClientId;
 }
 
-/** Chame com ?debug=1 na URL (ex.: /login?debug=1). Usa console.log para aparecer no prod. */
-export function logConfigDebug(): void {
-  if (typeof window === "undefined") return;
-  console.log("[MASD Caixa config]", {
+/** Objeto de debug: sempre exposto em window. No console digite: __MASD_CAIXA_DEBUG__ */
+function getConfigDebugSnapshot() {
+  return {
     "window.MASD_CAIXA existe?": !!w,
     "API_BASE_URL (runtime)": runtimeBaseURL || "(vazio)",
     "API_BASE_URL (build)": buildBaseURL ? "***" : "(vazio)",
     "GOOGLE_CLIENT_ID (runtime)": runtimeGoogleId ? `${runtimeGoogleId.slice(0, 20)}...` : "(vazio)",
     "GOOGLE_CLIENT_ID (build)": buildGoogleId ? "***" : "(vazio)",
     "googleClientId final": googleClientId ? "preenchido" : "VAZIO",
-  });
+  };
+}
+
+if (typeof window !== "undefined") {
+  (window as unknown as { __MASD_CAIXA_DEBUG__?: unknown }).__MASD_CAIXA_DEBUG__ = getConfigDebugSnapshot();
+}
+
+export function logConfigDebug(): void {
+  if (typeof window === "undefined") return;
+  const snap = getConfigDebugSnapshot();
+  (window as unknown as { __MASD_CAIXA_DEBUG__?: unknown }).__MASD_CAIXA_DEBUG__ = snap;
+  console.warn("[MASD Caixa config] Digite no console: __MASD_CAIXA_DEBUG__", snap);
 }
 
 export const api = axios.create({
