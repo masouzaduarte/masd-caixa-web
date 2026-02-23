@@ -24,10 +24,25 @@ export const apiBaseURL = baseURL;
 
 const runtimeGoogleId = w?.GOOGLE_CLIENT_ID ?? "";
 const buildGoogleId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
-/** Mesmo critério que API_BASE_URL: runtime (config.js) ou build (VITE_GOOGLE_CLIENT_ID). */
-export const googleClientId = runtimeGoogleId || buildGoogleId;
+/** Em dev: sempre usar .env (config.js não existe). Em prod: runtime (config.js) ou build. */
+export const googleClientId = import.meta.env.DEV ? buildGoogleId : (runtimeGoogleId || buildGoogleId);
 export function getGoogleClientId(): string {
   return googleClientId;
+}
+
+/** Debug: log no console ao carregar o módulo (use ?debug=1 na URL e abra o DevTools). */
+if (typeof window !== "undefined") {
+  const debug = () => {
+    console.debug("[MASD Caixa config]", {
+      "window.MASD_CAIXA existe?": !!w,
+      "API_BASE_URL (runtime)": runtimeBaseURL || "(vazio)",
+      "API_BASE_URL (build)": buildBaseURL ? "***" : "(vazio)",
+      "GOOGLE_CLIENT_ID (runtime)": runtimeGoogleId ? `${runtimeGoogleId.slice(0, 20)}...` : "(vazio)",
+      "GOOGLE_CLIENT_ID (build)": buildGoogleId ? "***" : "(vazio)",
+      "googleClientId final": googleClientId ? "preenchido" : "VAZIO",
+    });
+  };
+  if (new URLSearchParams(window.location.search).get("debug") === "1") debug();
 }
 
 export const api = axios.create({

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { login, googleStart } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
 import { apiBaseURL, googleClientId } from '../api/client';
+import { useDebugConfig } from '../hooks/useDebugConfig';
 import { setToken, setUser } from '../storage/authStorage';
 
 declare global {
@@ -31,6 +32,10 @@ function saveAuthAndNavigate(data: { token: string; name: string; email: string;
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const showDebug = searchParams.get('debug') === '1';
+  const debug = useDebugConfig(showDebug);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -177,6 +182,32 @@ export function LoginPage() {
           <p className="auth-footer-text">
             Não tem conta? <Link to="/register">Criar conta</Link>
           </p>
+
+          {showDebug && (
+            <div
+              className="card"
+              style={{
+                marginTop: '1.5rem',
+                padding: '1rem',
+                fontSize: '0.75rem',
+                fontFamily: 'monospace',
+                background: 'var(--color-bg-elevated)',
+                border: '1px solid var(--color-border)',
+              }}
+            >
+              <strong style={{ display: 'block', marginBottom: '0.5rem' }}>🔧 Debug (?debug=1)</strong>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span><strong>/config.js</strong>: {debug.configJsStatus == null ? 'carregando...' : debug.configJsStatus === 200 ? `200 OK (${debug.configJsBody.length} chars)` : `HTTP ${debug.configJsStatus}`}</span>
+                {debug.configJsBody && (
+                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: '120px', overflow: 'auto' }}>
+                    {debug.configJsBody}
+                  </pre>
+                )}
+                <span><strong>window.MASD_CAIXA</strong>: {debug.windowMasdCaixa ? JSON.stringify(debug.windowMasdCaixa) : 'não definido'}</span>
+                <span><strong>googleClientId</strong>: {googleClientId ? `preenchido (${googleClientId.length} chars)` : 'VAZIO'}</span>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
