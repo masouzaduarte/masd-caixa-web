@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { login, googleStart } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, googleClientId } from '../api/client';
+import { apiBaseURL, getGoogleClientId } from '../api/client';
 import { setToken, setUser } from '../storage/authStorage';
 
 declare global {
@@ -37,6 +37,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [linkRequiredModal, setLinkRequiredModal] = useState(false);
   const googleButtonRef = useRef<HTMLDivElement>(null);
+  const [googleClientId, setGoogleClientId] = useState(getGoogleClientId);
 
   const handleGoogleCredential = useCallback((credential: string) => {
     setError(null);
@@ -73,6 +74,13 @@ export function LoginPage() {
       })
       .finally(() => setLoading(false));
   }, [navigate]);
+
+  // Rechecar config.js (produção: injetado em runtime após o app carregar)
+  useEffect(() => {
+    const t1 = setTimeout(() => setGoogleClientId(getGoogleClientId()), 100);
+    const t2 = setTimeout(() => setGoogleClientId(getGoogleClientId()), 800);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   useEffect(() => {
     if (!googleClientId || !window.google?.accounts?.id) return;

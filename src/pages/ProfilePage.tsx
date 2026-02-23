@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getUser, setUser, setToken } from '../storage/authStorage';
 import { googleLink } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, googleClientId } from '../api/client';
+import { apiBaseURL, getGoogleClientId } from '../api/client';
 
 export function ProfilePage() {
   const stored = getUser();
@@ -48,6 +48,11 @@ export function ProfilePage() {
       })
       .finally(() => setLinkLoading(false));
   }, [stored?.name, stored?.email]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setGoogleClientId(getGoogleClientId()), 300);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (!googleClientId || !window.google?.accounts?.id || isGoogleLinked) return;
@@ -124,7 +129,7 @@ export function ProfilePage() {
           <p style={{ margin: 0, color: 'var(--color-text)' }}>
             Conectado com Google: <strong>{linkedGoogleEmail || email}</strong>
           </p>
-        ) : googleClientId ? (
+        ) : (googleClientId || getGoogleClientId()) ? (
           <>
             <p style={{ margin: '0 0 1rem 0', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
               Vincule sua conta Google para poder entrar com ela depois.
