@@ -29,6 +29,20 @@ export function getGoogleClientId(): string {
   return w.MASD_CAIXA?.GOOGLE_CLIENT_ID || import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 }
 
+/** Carrega /config.js dinamicamente (produção Docker). Resolve quando o script terminar ou após 2s. */
+export function loadRuntimeConfig(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  if ((window as { MASD_CAIXA?: unknown }).MASD_CAIXA != null) return Promise.resolve();
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "/config.js";
+    script.onload = () => resolve();
+    script.onerror = () => resolve();
+    document.head.appendChild(script);
+    setTimeout(resolve, 2000);
+  });
+}
+
 export const api = axios.create({
   baseURL,
   headers: { "Content-Type": "application/json" },

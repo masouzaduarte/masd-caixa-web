@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { getUser, setUser, setToken } from '../storage/authStorage';
 import { googleLink } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, getGoogleClientId } from '../api/client';
+import { apiBaseURL, getGoogleClientId, loadRuntimeConfig } from '../api/client';
 
 export function ProfilePage() {
   const stored = getUser();
@@ -51,7 +51,8 @@ export function ProfilePage() {
   }, [stored?.name, stored?.email]);
 
   useEffect(() => {
-    const t = setTimeout(() => setGoogleClientId(getGoogleClientId()), 300);
+    loadRuntimeConfig().then(() => setGoogleClientId(getGoogleClientId()));
+    const t = setTimeout(() => setGoogleClientId(getGoogleClientId()), 800);
     return () => clearTimeout(t);
   }, []);
 

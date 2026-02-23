@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { login, googleStart } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
-import { apiBaseURL, getGoogleClientId } from '../api/client';
+import { apiBaseURL, getGoogleClientId, loadRuntimeConfig } from '../api/client';
 import { setToken, setUser } from '../storage/authStorage';
 
 declare global {
@@ -75,10 +75,11 @@ export function LoginPage() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
-  // Rechecar config.js (produção: injetado em runtime após o app carregar)
+  // Produção: carregar config.js dinamicamente (Docker injeta em runtime)
   useEffect(() => {
-    const t1 = setTimeout(() => setGoogleClientId(getGoogleClientId()), 100);
-    const t2 = setTimeout(() => setGoogleClientId(getGoogleClientId()), 800);
+    loadRuntimeConfig().then(() => setGoogleClientId(getGoogleClientId()));
+    const t1 = setTimeout(() => setGoogleClientId(getGoogleClientId()), 500);
+    const t2 = setTimeout(() => setGoogleClientId(getGoogleClientId()), 1500);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
