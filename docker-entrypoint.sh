@@ -2,12 +2,17 @@
 set -e
 sed "s/\${PORT}/${PORT:-80}/g" /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
-# Injetar variáveis de runtime no frontend (Railway envia em runtime, não no build)
+# Injetar variáveis de runtime no frontend (Railway envia em runtime ou só no build)
 # O app lê window.MASD_CAIXA.API_BASE_URL e window.MASD_CAIXA.GOOGLE_CLIENT_ID
 CONFIG_JS="/usr/share/nginx/html/config.js"
+GOOGLE_ID_FILE="/usr/share/nginx/html/.google_client_id"
 escape_js() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g; s/'"'"'/\\'"'"'/g'; }
 API_VAL="$(escape_js "${VITE_API_BASE_URL:-}")"
 GOOGLE_VAL="$(escape_js "${VITE_GOOGLE_CLIENT_ID:-${GOOGLE_CLIENT_ID:-}}")"
+# Railway às vezes só passa variáveis no build; usar valor gravado no build se runtime vazio
+if [ -z "$GOOGLE_VAL" ] && [ -f "$GOOGLE_ID_FILE" ]; then
+  GOOGLE_VAL="$(escape_js "$(cat "$GOOGLE_ID_FILE")")"
+fi
 printf 'window.MASD_CAIXA={"API_BASE_URL":"%s","GOOGLE_CLIENT_ID":"%s"};\n' "$API_VAL" "$GOOGLE_VAL" > "$CONFIG_JS"
 chmod 644 "$CONFIG_JS"
 
