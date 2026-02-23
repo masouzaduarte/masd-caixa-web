@@ -4,19 +4,6 @@ import { googleLink } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
 import { apiBaseURL, googleClientId } from '../api/client';
 
-declare global {
-  interface Window {
-    google?: {
-      accounts: {
-        id: {
-          initialize: (config: { client_id: string; callback: (r: { credential: string }) => void }) => void;
-          renderButton: (el: HTMLElement | null, config: { type?: string; theme?: string; size?: string; text?: string }) => void;
-        };
-      };
-    };
-  }
-}
-
 export function ProfilePage() {
   const stored = getUser();
   const [name, setName] = useState(stored?.name ?? '');
