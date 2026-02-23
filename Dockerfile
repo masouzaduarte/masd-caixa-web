@@ -4,14 +4,14 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
-# Railway passa variáveis do serviço como build args; o build usa na hora do deploy
+# Railway (Docker): variáveis devem estar disponíveis como build args no deploy
 ARG VITE_API_BASE_URL
 ARG VITE_GOOGLE_CLIENT_ID
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 RUN npm run build
-# Fallback para prod: Railway pode não injetar vars no runtime; entrypoint lê este arquivo
-RUN printf '%s' "$VITE_GOOGLE_CLIENT_ID" > /app/dist/.google_client_id
+# Grava config.js e .api_url / .google_client_id para o entrypoint usar em runtime
+RUN node scripts/write-build-config.cjs
 
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
