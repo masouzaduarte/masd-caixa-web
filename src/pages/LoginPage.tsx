@@ -5,6 +5,7 @@ import { login, googleStart } from '../api/masdApi';
 import { getApiErrorMessage } from '../api/errorMessage';
 import { apiBaseURL, getGoogleClientId, fetchGoogleClientIdFromApi, logConfigDebug } from '../api/client';
 import { useDebugConfig } from '../hooks/useDebugConfig';
+import { useGoogleScriptReady } from '../hooks/useGoogleScriptReady';
 import { setToken, setUser } from '../storage/authStorage';
 
 declare global {
@@ -47,6 +48,7 @@ export function LoginPage() {
   const [linkRequiredModal, setLinkRequiredModal] = useState(false);
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const [googleClientId, setGoogleClientId] = useState(() => getGoogleClientId());
+  const googleScriptReady = useGoogleScriptReady();
 
   useEffect(() => {
     if (googleClientId) return;
@@ -68,29 +70,42 @@ export function LoginPage() {
             linkedGoogleEmail: d.auth.linkedGoogleEmail,
           });
           const accountId = localStorage.getItem('masd_caixa_account_id');
-          navigate(accountId ? '/' : '/accounts');
+          const path = accountId ? '/' : '/accounts';
+          setLoading(false);
+          navigate(path, { replace: true });
+          // Fallback: callback do Google às vezes impede que navigate surta efeito; forçar em seguida
+          setTimeout(() => {
+            const token = localStorage.getItem('masd_caixa_token');
+            if (token && window.location.pathname === '/login') {
+              window.location.replace(path || '/');
+            }
+          }, 100);
           return;
         }
         if (d.status === 'LINK_REQUIRED') {
+          setLoading(false);
           setLinkRequiredModal(true);
           return;
         }
         if (d.status === 'NEEDS_COMPANY' && d.tempToken) {
+          setLoading(false);
           navigate('/complete-signup', {
+            replace: true,
             state: { tempToken: d.tempToken, email: d.email ?? '', name: d.name ?? '' },
           });
           return;
         }
+        setLoading(false);
         setError('Resposta inesperada. Tente novamente.');
       })
       .catch((err: unknown) => {
         setError(getApiErrorMessage(err, 'Não foi possível entrar com Google.', apiBaseURL));
-      })
-      .finally(() => setLoading(false));
+        setLoading(false);
+      });
   }, [navigate]);
 
   useEffect(() => {
-    if (!googleClientId || !window.google?.accounts?.id) return;
+    if (!googleClientId || !googleScriptReady || !window.google?.accounts?.id) return;
     window.google.accounts.id.initialize({
       client_id: googleClientId,
       callback: (r) => handleGoogleCredential(r.credential),
@@ -102,7 +117,7 @@ export function LoginPage() {
         size: 'large',
       });
     }
-  }, [googleClientId, handleGoogleCredential]);
+  }, [googleClientId, googleScriptReady, handleGoogleCredential]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

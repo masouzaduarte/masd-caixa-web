@@ -14,6 +14,7 @@ export function ProfilePage() {
   const [linkSuccess, setLinkSuccess] = useState(false);
   const googleLinkButtonRef = useRef<HTMLDivElement>(null);
   const [googleClientId, setGoogleClientId] = useState(() => getGoogleClientId());
+  const googleScriptReady = useGoogleScriptReady();
 
   useEffect(() => {
     if (googleClientId) return;
@@ -56,7 +57,7 @@ export function ProfilePage() {
   }, [stored?.name, stored?.email]);
 
   useEffect(() => {
-    if (!googleClientId || !window.google?.accounts?.id || isGoogleLinked) return;
+    if (!googleClientId || !googleScriptReady || !window.google?.accounts?.id || isGoogleLinked) return;
     window.google.accounts.id.initialize({
       client_id: googleClientId,
       callback: (r) => handleGoogleCredential(r.credential),
@@ -69,7 +70,7 @@ export function ProfilePage() {
         text: 'continue_with',
       });
     }
-  }, [googleClientId, isGoogleLinked, handleGoogleCredential]);
+  }, [googleClientId, googleScriptReady, isGoogleLinked, handleGoogleCredential]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
